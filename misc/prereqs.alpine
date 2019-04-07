@@ -1,3 +1,5 @@
+#!/bin/sh
+set -xe
 # 2019-04-05 gflags is only in edge/testing.
 echo http://dl-cdn.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories
 apk update
