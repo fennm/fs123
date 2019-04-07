@@ -1,0 +1,15 @@
+---
+services:
+    - docker
+
+env:
+    - DOCKER_IMAGE=ubuntu:bionic
+
+install:
+    - docker pull $DOCKER_IMAGE
+
+script:
+    - > 
+        docker run -v "$(pwd):/fs123" 
+        /bin/sh -c "cd /fs123 && ./misc/prereqs.bionic && make && make check && make install"
+# vim: ts=4:sw=4:et:ai
