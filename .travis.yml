@@ -1,5 +1,6 @@
 ---
 language: minimal
+sudo: required
 
 services:
     - docker
@@ -7,13 +8,22 @@ services:
 env:
     - DOCKER_IMAGE=ubuntu:bionic
 
+# add fuse to the build host VM
+# https://github.com/travis-ci/travis-ci/issues/1100
+before_install:
+    - sudo apt-get install -qq pkg-config fuse
+    - sudo modprobe fuse
+    - sudo chmod 666 /dev/fuse
+    - sudo chown root:$USER /etc/fuse.conf
+
 install:
     - docker pull $DOCKER_IMAGE
 
 script:
     - > 
         docker run -v "$(pwd -P):/fs123" 
-        $DOCKER_IMAGE
-        /bin/sh -c "cd /fs123 && ./misc/prereqs.bionic && make && make check && make install"
+        --device /dev/fuse --cap-add SYS_PTRACE --cap-add SYS_ADMIN
+        ${DOCKER_IMAGE}
+        /bin/sh -c "cd /fs123 && ./misc/prereqs.${DOCKER_IMAGE} && make -j && make check && make install"
 
 # vim: ts=4:sw=4:et:ai
